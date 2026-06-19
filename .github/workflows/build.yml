@@ -1,0 +1,57 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Install Python dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          python -m PyInstaller --noconfirm --clean packaging/bidding-radar.spec
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bidding-radar-exe
+          path: backend/dist/領標雷達/
+          retention-days: 30
+
+      - name: Create ZIP archive
+        run: |
+          Compress-Archive -Path "backend/dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: bidding-radar-zip
+          path: dist/領標雷達-Windows.zip
+          retention-days: 30

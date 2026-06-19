@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #0ea5e9;
+  --color-accent: #f59e0b;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+.tender-card {
+  @apply bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-4 cursor-pointer;
+}

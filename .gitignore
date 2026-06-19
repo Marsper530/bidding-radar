@@ -1,0 +1,11 @@
+# 領標雷達 Windows Build 成果物
+# 不用 commit 到 git
+dist/
+*.exe
+*.zip
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+build/
+*.spec
