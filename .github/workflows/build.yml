@@ -18,15 +18,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
       - name: Build frontend
         run: |
           cd frontend
-          npm ci
+          npm install
           npm run build
 
       - name: Install Python dependencies
@@ -36,22 +31,13 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          python -m PyInstaller --noconfirm --clean packaging/bidding-radar.spec
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: bidding-radar-exe
-          path: backend/dist/領標雷達/
-          retention-days: 30
-
-      - name: Create ZIP archive
-        run: |
-          Compress-Archive -Path "backend/dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
+          cd backend
+          python -m PyInstaller --noconfirm packaging/bidding-radar.spec
+          Compress-Archive -Path "dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
 
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: bidding-radar-zip
-          path: dist/領標雷達-Windows.zip
+          name: bidding-radar-win
+          path: backend/dist/領標雷達-Windows.zip
           retention-days: 30
