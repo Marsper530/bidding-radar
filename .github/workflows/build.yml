@@ -31,13 +31,16 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          cd backend
           python -m PyInstaller --noconfirm packaging/bidding-radar.spec
-          Compress-Archive -Path "dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
+
+      - name: Create ZIP
+        run: |
+          mkdir -p dist
+          Compress-Archive -Path "backend/dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
 
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
           name: bidding-radar-win
-          path: backend/dist/領標雷達-Windows.zip
+          path: dist/領標雷達-Windows.zip
           retention-days: 30
