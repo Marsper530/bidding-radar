@@ -26,17 +26,36 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          cd backend
-          pip install -r requirements.txt
+          pip install -r backend/requirements.txt
 
       - name: Build with PyInstaller
         run: |
-          python -m PyInstaller --noconfirm packaging/bidding-radar.spec
+          python -m PyInstaller ^
+            --name "領標雷達" ^
+            --add-data "frontend/dist;frontend" ^
+            --add-data "backend;backend" ^
+            --hidden-import backend.main ^
+            --hidden-import backend.routers.tenders ^
+            --hidden-import backend.services.pcc_api ^
+            --hidden-import backend.models.tender ^
+            --hidden-import backend.schemas.tender ^
+            --hidden-import backend.database ^
+            --hidden-import sqlalchemy ^
+            --hidden-import fastapi ^
+            --hidden-import uvicorn ^
+            --hidden-import httpx ^
+            --hidden-import apscheduler ^
+            --hidden-import pydantic ^
+            --hidden-import pydantic_settings ^
+            --console=False ^
+            --onefile ^
+            --clean ^
+            packaging/gui.py
 
       - name: Create ZIP
         run: |
           mkdir -p dist
-          Compress-Archive -Path "backend/dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
+          Compress-Archive -Path "dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
 
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
