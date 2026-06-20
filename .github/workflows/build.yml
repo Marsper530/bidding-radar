@@ -25,44 +25,10 @@ jobs:
           npm run build
 
       - name: Install Python dependencies
-        run: |
-          pip install -r backend/requirements.txt
+        run: pip install -r backend/requirements.txt
 
-      - name: Build with PyInstaller
-        run: |
-          $spec = @'
-          # -*- mode: python ; coding: utf-8 -*-
-          import sys, os
-          from PyInstaller.building.build_main import Analysis, PYZ, EXE
-          from PyInstaller.building.datastruct import Tree
-          block_cipher = None
-          a = Analysis(
-              ['packaging/gui.py'],
-              pathex=[],
-              binaries=[],
-              datas=[
-                  ('frontend/dist', 'frontend'),
-                  ('backend', 'backend'),
-              ],
-              hiddenimports=[
-                  'backend.main', 'backend.routers.tenders',
-                  'backend.services.pcc_api', 'backend.models.tender',
-                  'backend.schemas.tender', 'backend.database',
-                  'sqlalchemy', 'fastapi', 'uvicorn', 'httpx',
-                  'apscheduler', 'pydantic', 'pydantic_settings',
-              ],
-              hookspath=[],
-              excludes=[],
-              cipher=block_cipher,
-          )
-          pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
-          exe = EXE(pyz, a.scripts, [], exclude_binaries=True,
-                    name='領標雷達', debug=False, strip=False, upx=True, console=False)
-          coll = COLLECT(exe, a.binaries, a.zipfiles, a.datas,
-                         strip=False, upx=True, name='領標雷達')
-          '@
-          $spec | Out-File -FilePath "bidding-radar-build.spec" -Encoding utf8
-          python -m PyInstaller --noconfirm bidding-radar-build.spec
+      - name: Build with Python + PyInstaller
+        run: python build.py
 
       - name: Create ZIP
         run: |
