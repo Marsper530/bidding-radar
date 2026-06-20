@@ -30,32 +30,44 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          python -m PyInstaller ^
-            --name "領標雷達" ^
-            --add-data "frontend/dist;frontend" ^
-            --add-data "backend;backend" ^
-            --hidden-import backend.main ^
-            --hidden-import backend.routers.tenders ^
-            --hidden-import backend.services.pcc_api ^
-            --hidden-import backend.models.tender ^
-            --hidden-import backend.schemas.tender ^
-            --hidden-import backend.database ^
-            --hidden-import sqlalchemy ^
-            --hidden-import fastapi ^
-            --hidden-import uvicorn ^
-            --hidden-import httpx ^
-            --hidden-import apscheduler ^
-            --hidden-import pydantic ^
-            --hidden-import pydantic_settings ^
-            --console=False ^
-            --onefile ^
-            --clean ^
-            packaging/gui.py
+          $spec = @'
+          # -*- mode: python ; coding: utf-8 -*-
+          import sys, os
+          from PyInstaller.building.build_main import Analysis, PYZ, EXE
+          from PyInstaller.building.datastruct import Tree
+          block_cipher = None
+          a = Analysis(
+              ['packaging/gui.py'],
+              pathex=[],
+              binaries=[],
+              datas=[
+                  ('frontend/dist', 'frontend'),
+                  ('backend', 'backend'),
+              ],
+              hiddenimports=[
+                  'backend.main', 'backend.routers.tenders',
+                  'backend.services.pcc_api', 'backend.models.tender',
+                  'backend.schemas.tender', 'backend.database',
+                  'sqlalchemy', 'fastapi', 'uvicorn', 'httpx',
+                  'apscheduler', 'pydantic', 'pydantic_settings',
+              ],
+              hookspath=[],
+              excludes=[],
+              cipher=block_cipher,
+          )
+          pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+          exe = EXE(pyz, a.scripts, [], exclude_binaries=True,
+                    name='領標雷達', debug=False, strip=False, upx=True, console=False)
+          coll = COLLECT(exe, a.binaries, a.zipfiles, a.datas,
+                         strip=False, upx=True, name='領標雷達')
+          '@
+          $spec | Out-File -FilePath "bidding-radar-build.spec" -Encoding utf8
+          python -m PyInstaller --noconfirm bidding-radar-build.spec
 
       - name: Create ZIP
         run: |
           mkdir -p dist
-          Compress-Archive -Path "dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
+          Compress-Archive -Path "backend/dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
 
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
