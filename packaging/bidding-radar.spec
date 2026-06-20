@@ -1,16 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
 # PyInstaller spec for 領標雷達 (Bidding Radar) Windows Executable
-# Run from repo root: python -m PyInstaller --noconfirm packaging/bidding-radar.spec
+# Working dir when running PyInstaller: repo root (where backend/, frontend/ are)
+# Run: python -m PyInstaller --noconfirm packaging/bidding-radar.spec
 
 block_cipher = None
 
 a = Analysis(
-    ['backend/packaging/gui.py'],
+    ['gui.py'],           # relative to packaging/ directory
     pathex=[],
     binaries=[],
     datas=[
-        ('frontend/dist', 'frontend', 'static'),
-        ('backend', 'backend', 'static'),
+        ('../frontend/dist', 'frontend', 'static'),
+        ('.', 'backend', 'static'),
     ],
     hiddenimports=[
         'backend.main',
