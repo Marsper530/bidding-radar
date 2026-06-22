@@ -33,17 +33,9 @@ jobs:
         shell: bash
         run: python build.py
 
-      - name: Create dist folder and ZIP
-        shell: bash
-        run: |
-          mkdir -p dist
-          if [ -d "backend/dist" ]; then
-            powershell -Command "Compress-Archive -Path 'backend/dist/領標雷達/*' -DestinationPath 'dist/領標雷達-Windows.zip' -Force"
-          fi
-
-      - name: Upload ZIP
+      - name: Upload exe
         uses: actions/upload-artifact@v4
         with:
           name: bidding-radar-win
-          path: dist/領標雷達-Windows.zip
+          path: backend/dist/領標雷達.exe
           retention-days: 30
