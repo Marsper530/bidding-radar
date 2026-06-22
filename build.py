@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 """Generate PyInstaller spec file and run PyInstaller."""
-import subprocess, sys, os
+import subprocess, sys, os, shutil
+
+# Clean up old build artifacts
+for path in ['bidding-radar.spec', 'build', 'dist', 'backend/build', 'backend/dist']:
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+        print(f"Removed old directory: {path}")
+    elif os.path.isfile(path):
+        os.remove(path)
+        print(f"Removed old file: {path}")
 
 SPEC = r"""
 # -*- mode: python ; coding: utf-8 -*-
@@ -38,6 +47,7 @@ with open('bidding-radar.spec', 'w', encoding='utf-8') as f:
 print("Spec file written. Running PyInstaller...")
 result = subprocess.run(
     [sys.executable, '-m', 'PyInstaller', '--noconfirm', 'bidding-radar.spec'],
+    cwd=os.getcwd(),
     env={**os.environ, 'PYTHONPATH': '.'}
 )
 sys.exit(result.returncode)
