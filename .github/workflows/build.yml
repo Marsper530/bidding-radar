@@ -19,21 +19,27 @@ jobs:
           python-version: '3.12'
 
       - name: Build frontend
+        shell: bash
         run: |
           cd frontend
           npm install
           npm run build
 
       - name: Install Python dependencies
+        shell: bash
         run: pip install -r backend/requirements.txt
 
       - name: Build with Python + PyInstaller
+        shell: bash
         run: python build.py
 
-      - name: Create ZIP
+      - name: Create dist folder and ZIP
+        shell: bash
         run: |
           mkdir -p dist
-          Compress-Archive -Path "backend/dist/領標雷達/*" -DestinationPath "dist/領標雷達-Windows.zip"
+          if [ -d "backend/dist" ]; then
+            powershell -Command "Compress-Archive -Path 'backend/dist/領標雷達/*' -DestinationPath 'dist/領標雷達-Windows.zip' -Force"
+          fi
 
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
