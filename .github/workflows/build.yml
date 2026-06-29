@@ -33,9 +33,15 @@ jobs:
         shell: bash
         run: python build.py
 
+      - name: Show build output
+        shell: bash
+        run: |
+          ls -la backend/dist/ 2>/dev/null || echo "dist not found"
+          find backend -name "*.exe" 2>/dev/null
+
       - name: Upload exe
         uses: actions/upload-artifact@v4
         with:
-          name: bidding-radar-win
-          path: backend/dist/領標雷達.exe
+          name: bidding-radar-exe
+          path: backend/dist/BiddingRadar.exe
           retention-days: 30
